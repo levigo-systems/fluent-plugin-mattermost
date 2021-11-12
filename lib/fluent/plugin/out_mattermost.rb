@@ -17,14 +17,12 @@ module Fluent
 
       config_param :enable_tls,  :bool, default: true
 
-      config_param :channel_id, :string, default: nil
-
       def configure(conf)
         super
       end
       def start
         super
-        log.info(webhook_url: @webhook_url, text: @text, channel_id: @channel_id)
+        log.info(webhook_url: @webhook_url, text: @text)
       end
 
       def write(chunk)
@@ -52,7 +50,7 @@ module Fluent
         request = Net::HTTP::Post.new(url)
         request["Content-Type"] = "application/json"
         request.body = JSON.dump({
-          "channel_id": @channel_id,
+          "channel_id": URI(@webhook_url).path.split('/').last,
           "attachments": message(payload)
         })
 
