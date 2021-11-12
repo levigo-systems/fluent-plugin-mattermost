@@ -54,10 +54,13 @@ module Fluent
           "attachments": message(payload)
         })
 
-        log.info request.body
-
         response = https.request(request)
-        puts response.read_body
+
+        if response.read_body != "ok"
+          log.error "response from mattermost: ", response.read_body
+        else 
+          puts response.read_body
+        end
       end
 
       def message(text)
