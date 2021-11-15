@@ -14,7 +14,7 @@ module Fluent
       # Required parameter: The configuration must have this parameter like 'param1 10'.
       config_param :webhook_url, :string, default: nil
 
-      config_param :record, :string, default: "record"
+      config_param :tag, :string, default: "tag"
 
       config_param :enable_tls,  :bool, default: true
 
@@ -29,9 +29,11 @@ module Fluent
       def write(chunk)
         begin
           log.error "I am an error"
-          logInspector
-          if @record
-            post(#{@record})
+          record = logInspector(chunk)
+          log.warn @tag
+          puts record
+          if record
+            post(record)
           end
         rescue Timeout::Error => e
           log.warn "out_mattermost:", :error => e.to_s, :error_class => e.class.to_s
@@ -82,10 +84,13 @@ module Fluent
         return payload
       end
 
-      def logInspector()
-        # API: FluentLogger.new(tag_prefix, options)
-        log = Fluent::Logger::FluentLogger.new(nil, :host => 'localhost', :port => 24224)
-        p log.last_error # You can get last error object via last_error method
+      def logInspector(chunk)
+        log.info "ich bin da"
+        tag = chunk.metadata.tag
+        chunk.msgpack_each do |time, record|
+          puts "#{tag}\x01#{time}\x01#{record}\n"
+          return tag
+        end
       end
     end
   end
