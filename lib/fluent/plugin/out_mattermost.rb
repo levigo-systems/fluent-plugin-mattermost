@@ -66,9 +66,14 @@ module Fluent
       def message(text)
         payload = [{
                     "author_name": "Fluentd",
-                    "author_icon": "https://coralogix.com/wp-content/uploads/2020/04/fluentd-guide-700x430.png",
+                    "thumb_url": "https://coralogix.com/wp-content/uploads/2020/04/fluentd-guide-700x430.png",
                     "color": "#FF0000",
-                    "text": text
+                    "fields": [
+                    {
+                      "short":false,
+                      "title":"Fluentd error",
+                      "value": text
+                    }]
                   }]
         log.info payload
         return payload
