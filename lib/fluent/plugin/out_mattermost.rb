@@ -1,4 +1,5 @@
 require "fluent/plugin/output"
+require 'fluent-logger'
 require 'uri'
 require 'net/http'
 require 'net/https'
@@ -27,6 +28,8 @@ module Fluent
 
       def write(chunk)
         begin
+          log.error "I am an error"
+          logInspector
           if @text
             post(@text)
           end
@@ -79,17 +82,10 @@ module Fluent
         return payload
       end
 
-      def chunkInspector(chunk)
-        chunk.open do |io|
-          begin
-            data = io.read
-            records = Fluent::MessagePackFactory.msgpack_unpacker(StringIO.new(data)).to_enum.to_a
-            puts "data #{data.size / 1024} KB - #{records.size} records"
-            puts records.first
-            log.info records.first
-            puts "^^ this should not happen - msgpack parsing error" unless records.first.is_a? Array
-          end
-        end
+      def logInspector()
+        # API: FluentLogger.new(tag_prefix, options)
+        log = Fluent::Logger::FluentLogger.new(nil, :host => 'localhost', :port => 24224)
+        p log.last_error # You can get last error object via last_error method
       end
     end
   end
