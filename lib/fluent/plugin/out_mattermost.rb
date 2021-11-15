@@ -14,7 +14,7 @@ module Fluent
       # Required parameter: The configuration must have this parameter like 'param1 10'.
       config_param :webhook_url, :string, default: nil
 
-      config_param :text, :string, default: nil
+      config_param :record, :string, default: "record"
 
       config_param :enable_tls,  :bool, default: true
 
@@ -23,15 +23,15 @@ module Fluent
       end
       def start
         super
-        log.info(webhook_url: @webhook_url, text: @text)
+        log.info(webhook_url: @webhook_url, record: @record)
       end
 
       def write(chunk)
         begin
           log.error "I am an error"
           logInspector
-          if @text
-            post(@text)
+          if @record
+            post(#{@record})
           end
         rescue Timeout::Error => e
           log.warn "out_mattermost:", :error => e.to_s, :error_class => e.class.to_s
@@ -66,7 +66,7 @@ module Fluent
         end
       end
 
-      def message(text)
+      def message(record)
         payload = [{
                     "author_name": "Fluentd",
                     "thumb_url": "https://coralogix.com/wp-content/uploads/2020/04/fluentd-guide-700x430.png",
@@ -75,7 +75,7 @@ module Fluent
                     {
                       "short":false,
                       "title":"Fluentd error",
-                      "value": text
+                      "value": record
                     }]
                   }]
         log.info payload
