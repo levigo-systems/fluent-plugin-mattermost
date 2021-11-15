@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = "fluent-plugin-mattemost"
   spec.description   = "This plugin allows you to send messages to mattermost in case of errors"
-  spec.homepage      = "www.levigo.de"
+  spec.homepage      = "https://www.levigo.de"
   spec.license       = "Apache-2.0"
 
   test_files, files  = `git ls-files -z`.split("\x0").partition do |f|
