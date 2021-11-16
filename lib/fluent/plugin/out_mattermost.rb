@@ -16,7 +16,9 @@ module Fluent
 
       config_param :channel_id, :string, default: nil
 
-      config_param :tag, :bool, default: false
+      config_param :message, :string, default: nil
+
+      config_param :tag, :string, default: nil
 
       config_param :enable_tls,  :bool, default: true
 
@@ -26,16 +28,12 @@ module Fluent
 
       def start
         super
-        log.info(webhook_url: @webhook_url, channel_id: @channel_id, tag: @tag, enable_tls: @enable_tls)
+        log.info(webhook_url: @webhook_url, channel_id: @channel_id, enable_tls: @enable_tls)
       end
 
       def write(chunk)
         begin
-          if tag == true
-            message = getTag(chunk)
-          else
-            message = getError(chunk)
-          end
+          message = getInfos(chunk)
 
           post(message)
         rescue Timeout::Error => e
@@ -85,45 +83,26 @@ module Fluent
         return payload
       end
 
-      def getTag(chunk)
-        chunk.msgpack_each do |time, record|
-          puts "#{time}\x01#{record}\n"
-          return "#{time}\x01#{record}\n"
-        end
-      end
-
-      def getError(chunk)
+      def getInfos(chunk)
         messages = {}
-        chunk.msgpack_each do |tag, time, record|
-          channel = @channel_id
-          messages[channel] ||= ''
-          messages[channel] << "#{build_message(record)}\n"
+        chunk.msgpack_each do |time, record|
+          tag = @tag
+          messages[tag] ||= ''
+          messages[tag] << "\n#{build_message(record)}"
         end
-        messages.map do |channel, text|
+
+        messages.map do |tag, text|
           msg = {text: text}
-          msg.merge!(channel: channel) if channel
-          msg.merge!(common_payload)
-        puts messages
-        log.info "sono qui"
+          msg.merge!(tag: tag) if tag
+        end
+
         return messages
       end
 
       def build_message(record)
-        values = fetch_keys(record, @message_keys)
-        @message % values
+        @message % record.to_json
       end
-      #def getError(chunk)
-      #  chunk.open do |io|
-      #    begin
-      #      data = io.read
-      #      records = Fluent::Engine.msgpack_unpacker(StringIO.new(data)).to_enum.to_a
-      #      if records.key("input_tag").include?("error") || records.key("input_tag").include?("warn")
-      #        puts record.key("message")
-      #        return record.key("message")
-      #      end
-      #    end
-      # end
-      end
+
     end
   end
 end
