@@ -14,27 +14,30 @@ module Fluent
       # Required parameter: The configuration must have this parameter like 'param1 10'.
       config_param :webhook_url, :string, default: nil
 
-      config_param :tag, :string, default: "tag"
+      config_param :channel_id, :string, default: nil
+
+      config_param :tag, :bool, default: false
 
       config_param :enable_tls,  :bool, default: true
 
       def configure(conf)
         super
       end
+
       def start
         super
-        log.info(webhook_url: @webhook_url, record: @record)
+        log.info(webhook_url: @webhook_url, channel_id: @channel_id, tag: @tag, enable_tls: @enable_tls)
       end
 
       def write(chunk)
         begin
-          log.error "I am an error"
-          record = logInspector(chunk)
-          log.warn @tag
-          puts record
-          if record
-            post(record)
+          if tag == true
+            message = getTag(chunk)
+          else
+            message = getError(chunk)
           end
+
+          post(message)
         rescue Timeout::Error => e
           log.warn "out_mattermost:", :error => e.to_s, :error_class => e.class.to_s
           raise e # let Fluentd retry
@@ -55,10 +58,9 @@ module Fluent
         request = Net::HTTP::Post.new(url)
         request["Content-Type"] = "application/json"
         request.body = JSON.dump({
-          "channel_id": URI(@webhook_url).path.split('/').last,
+          "channel_id": @channel_id,
           "attachments": message(payload)
         })
-
         response = https.request(request)
 
         if response.read_body != "ok"
@@ -80,17 +82,47 @@ module Fluent
                       "value": record
                     }]
                   }]
-        log.info payload
         return payload
       end
 
-      def logInspector(chunk)
-        log.info "ich bin da"
-        tag = chunk.metadata.tag
+      def getTag(chunk)
         chunk.msgpack_each do |time, record|
-          puts "#{tag}\x01#{time}\x01#{record}\n"
-          return tag
+          puts "#{time}\x01#{record}\n"
+          return "#{time}\x01#{record}\n"
         end
+      end
+
+      def getError(chunk)
+        messages = {}
+        chunk.msgpack_each do |tag, time, record|
+          channel = @channel_id
+          messages[channel] ||= ''
+          messages[channel] << "#{build_message(record)}\n"
+        end
+        messages.map do |channel, text|
+          msg = {text: text}
+          msg.merge!(channel: channel) if channel
+          msg.merge!(common_payload)
+        puts messages
+        log.info "sono qui"
+        return messages
+      end
+
+      def build_message(record)
+        values = fetch_keys(record, @message_keys)
+        @message % values
+      end
+      #def getError(chunk)
+      #  chunk.open do |io|
+      #    begin
+      #      data = io.read
+      #      records = Fluent::Engine.msgpack_unpacker(StringIO.new(data)).to_enum.to_a
+      #      if records.key("input_tag").include?("error") || records.key("input_tag").include?("warn")
+      #        puts record.key("message")
+      #        return record.key("message")
+      #      end
+      #    end
+      # end
       end
     end
   end
