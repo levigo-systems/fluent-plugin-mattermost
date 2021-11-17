@@ -91,6 +91,7 @@ module Fluent
 
       def getInfos(chunk)
         messages = []
+        messages << "\n"
         chunk.msgpack_each do |time, record|
           messages << "#{build_message(record)}\n"
         end
