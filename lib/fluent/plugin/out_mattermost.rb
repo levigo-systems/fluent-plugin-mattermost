@@ -34,12 +34,12 @@ module Fluent
 
       def start
         super
-        log.info(webhook_url: @webhook_url, 
-                 channel_id: @channel_id, 
-                 message_title: @message_title, 
-                 message_color: @message_color, 
-                 message: @message, 
-                 enable_tls: @enable_tls)
+        #log.info(webhook_url: @webhook_url, 
+        #         channel_id: @channel_id, 
+        #         message_title: @message_title, 
+        #         message_color: @message_color, 
+        #         message: @message, 
+        #         enable_tls: @enable_tls)
       end
 
       def write(chunk)
@@ -47,9 +47,9 @@ module Fluent
           message = getInfos(chunk)
           
           #it checks if the message contains information. If it is empty, no message is sent.
-          if JSON.parse(message[1]) != [""]
+          #if JSON.parse(message[1]) != [""]
             post(message)
-          end
+          #end
         rescue Timeout::Error => e
           log.warn "out_mattermost:", :error => e.to_s, :error_class => e.class.to_s
           raise e # let Fluentd retry
@@ -107,12 +107,13 @@ module Fluent
       end
 
       def build_message(record)
-        if @message_keys != nil
-          values = fetch_keys(record, @message_keys)
-          @message % values.to_json
-        else
-          @message % record.to_json
-        end
+        @message % record.to_json
+        #if @message_keys != nil
+        #  values = fetch_keys(record, @message_keys)
+        #  @message % values.to_json
+        #else
+        #  @message % record.to_json
+        #end
       end
 
       def fetch_keys(record, keys)
@@ -120,7 +121,7 @@ module Fluent
           begin
             log.info record
             log.info record.dig("message".to_sym).to_s
-            
+
             record.dig("message".to_sym, key).to_s
           rescue KeyError
             log.warn "out_mattermost: the specified message_key '#{key}' not found in record. [#{record}]"
