@@ -16,9 +16,9 @@ module Fluent
 
       config_param :channel_id, :string, default: nil
 
-      config_param :message, :string, default: nil
+      config_param :message_title, :string, default: "fluent_error_title_default"
 
-      config_param :tag, :string, default: nil
+      config_param :message, :string, default: nil
 
       config_param :enable_tls,  :bool, default: true
 
@@ -28,7 +28,7 @@ module Fluent
 
       def start
         super
-        log.info(webhook_url: @webhook_url, channel_id: @channel_id, enable_tls: @enable_tls)
+        log.info(webhook_url: @webhook_url, channel_id: @channel_id, message: @message, enable_tls: @enable_tls)
       end
 
       def write(chunk)
@@ -42,7 +42,6 @@ module Fluent
         rescue => e
           log.error "out_mattermost:", :error => e.to_s, :error_class => e.class.to_s
           log.warn_backtrace e.backtrace
-          # discard. @todo: add more retriable errors
         end
       end
 
@@ -75,8 +74,8 @@ module Fluent
                     "color": "#FF0000",
                     "fields": [
                     {
-                      "short":false,
-                      "title":"Fluentd error",
+                      "short": false,
+                      "title": @message_title,
                       "value": record
                     }]
                   }]
@@ -84,16 +83,9 @@ module Fluent
       end
 
       def getInfos(chunk)
-        messages = {}
+        messages = []
         chunk.msgpack_each do |time, record|
-          tag = @tag
-          messages[tag] ||= ''
-          messages[tag] << "\n#{build_message(record)}"
-        end
-
-        messages.map do |tag, text|
-          msg = {text: text}
-          msg.merge!(tag: tag) if tag
+          messages << "#{build_message(record)}\n"
         end
 
         return messages
