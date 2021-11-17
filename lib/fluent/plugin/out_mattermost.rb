@@ -18,6 +18,8 @@ module Fluent
 
       config_param :message_title, :string, default: "fluent_error_title_default"
 
+      config_param :message_color, :string, default: "#A9A9A9"
+
       config_param :message, :string, default: nil
 
       config_param :enable_tls,  :bool, default: true
@@ -28,7 +30,12 @@ module Fluent
 
       def start
         super
-        log.info(webhook_url: @webhook_url, channel_id: @channel_id, message: @message, enable_tls: @enable_tls)
+        log.info(webhook_url: @webhook_url, 
+                 channel_id: @channel_id, 
+                 message_title: @message_title, 
+                 message_color: @message_color, 
+                 message: @message, 
+                 enable_tls: @enable_tls)
       end
 
       def write(chunk)
@@ -71,7 +78,7 @@ module Fluent
         payload = [{
                     "author_name": "Fluentd",
                     "thumb_url": "https://coralogix.com/wp-content/uploads/2020/04/fluentd-guide-700x430.png",
-                    "color": "#FF0000",
+                    "color": @message_color,
                     "fields": [
                     {
                       "short": false,
