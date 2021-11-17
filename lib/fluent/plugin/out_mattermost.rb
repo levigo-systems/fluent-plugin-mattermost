@@ -45,8 +45,11 @@ module Fluent
       def write(chunk)
         begin
           message = getInfos(chunk)
-
-          post(message)
+          
+          #it checks if the message contains information. If it is empty, no message is sent.
+          if JSON.parse(message[1]) != [""]
+            post(message)
+          end
         rescue Timeout::Error => e
           log.warn "out_mattermost:", :error => e.to_s, :error_class => e.class.to_s
           raise e # let Fluentd retry
@@ -115,7 +118,7 @@ module Fluent
       def fetch_keys(record, keys)
         Array(keys).map do |key|
           begin
-            record.fetch(key, "out_mattermost: the specified message_key '#{key}' not found in record. [#{record}]").to_s
+            record.dig("message".to_sym, key, nil).to_s
           rescue KeyError
             log.warn "out_mattermost: the specified message_key '#{key}' not found in record. [#{record}]"
             ''
