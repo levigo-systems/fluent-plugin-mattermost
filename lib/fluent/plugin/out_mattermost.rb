@@ -118,7 +118,9 @@ module Fluent
       def fetch_keys(record, keys)
         Array(keys).map do |key|
           begin
+            log.info record
             log.info record.dig("message".to_sym).to_s
+            
             record.dig("message".to_sym, key).to_s
           rescue KeyError
             log.warn "out_mattermost: the specified message_key '#{key}' not found in record. [#{record}]"
