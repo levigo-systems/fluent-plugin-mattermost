@@ -22,10 +22,6 @@ module Fluent
 
       config_param :message, :string, default: nil
 
-      config_param :message_keys, default: nil do |val|
-        val.split(',')
-      end
-
       config_param :enable_tls,  :bool, default: true
 
       def configure(conf)
@@ -34,22 +30,13 @@ module Fluent
 
       def start
         super
-        #log.info(webhook_url: @webhook_url, 
-        #         channel_id: @channel_id, 
-        #         message_title: @message_title, 
-        #         message_color: @message_color, 
-        #         message: @message, 
-        #         enable_tls: @enable_tls)
       end
 
       def write(chunk)
         begin
           message = getInfos(chunk)
-          
-          #it checks if the message contains information. If it is empty, no message is sent.
-          #if JSON.parse(message[1]) != [""]
-            post(message)
-          #end
+
+          post(message)
         rescue Timeout::Error => e
           log.warn "out_mattermost:", :error => e.to_s, :error_class => e.class.to_s
           raise e # let Fluentd retry
@@ -108,26 +95,6 @@ module Fluent
 
       def build_message(record)
         @message % record.to_json
-        #if @message_keys != nil
-        #  values = fetch_keys(record, @message_keys)
-        #  @message % values.to_json
-        #else
-        #  @message % record.to_json
-        #end
-      end
-
-      def fetch_keys(record, keys)
-        Array(keys).map do |key|
-          begin
-            log.info record
-            log.info record.dig("message".to_sym).to_s
-
-            record.dig("message".to_sym, key).to_s
-          rescue KeyError
-            log.warn "out_mattermost: the specified message_key '#{key}' not found in record. [#{record}]"
-            ''
-          end
-        end
       end
     end
   end
