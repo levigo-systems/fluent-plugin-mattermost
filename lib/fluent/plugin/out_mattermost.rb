@@ -30,11 +30,12 @@ module Fluent
 
       def start
         super
+        check_config_params
       end
 
       def write(chunk)
         begin
-          message = getInfos(chunk)
+          message = get_infos(chunk)
 
           post(message)
         rescue Timeout::Error => e
@@ -83,7 +84,7 @@ module Fluent
         return payload
       end
 
-      def getInfos(chunk)
+      def get_infos(chunk) 
         messages = []
         messages << "\n"
         chunk.msgpack_each do |time, record|
@@ -95,6 +96,13 @@ module Fluent
 
       def build_message(record)
         @message % record.to_json
+      end
+
+      def check_config_params()
+        if @webhook_url.nil? || @channel_id.nil? || @message.nil?
+          raise "Check in your Mattermost config, that all parameters in the configuration file are filled"
+          abort
+        end
       end
     end
   end
