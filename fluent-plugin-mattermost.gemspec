@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 Gem::Specification.new do |spec|
   spec.name    = "fluent-plugin-mattermost"
   spec.version = "0.1.0"
-  spec.authors = ["Pigi"]
+  spec.authors = ["Pierluigi Minardi"]
   spec.email   = ["p.minardi@levigo.de"]
 
   spec.summary       = "fluent-plugin-mattemost"

@@ -82,5 +82,5 @@ RUN cd /fluentd/plugins && \
 ```
 ## Copyright
 
-* Copyright(c) 2021- Pigi
+* Copyright(c) 2021- [levigo gruppe](https://www.levigo.de/)
 * License
