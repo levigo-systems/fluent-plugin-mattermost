@@ -16,7 +16,7 @@ module Fluent
 
       config_param :channel_id, :string, default: nil
 
-      config_param :message_title, :string, default: "fluent_error_title_default"
+      config_param :message_title, :string, default: "fluent_title_default"
 
       config_param :message_color, :string, default: "#A9A9A9"
 
