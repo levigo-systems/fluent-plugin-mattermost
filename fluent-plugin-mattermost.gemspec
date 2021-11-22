@@ -4,13 +4,13 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 Gem::Specification.new do |spec|
   spec.name    = "fluent-plugin-mattermost"
   spec.version = "0.1.0"
-  spec.authors = ["Pigi"]
+  spec.authors = ["Pierluigi Minardi"]
   spec.email   = ["p.minardi@levigo.de"]
 
-  spec.summary       = %q{TODO: Write a short summary, because Rubygems requires one.}
-  spec.description   = %q{TODO: Write a longer description or delete this line.}
-  spec.homepage      = "TODO: Put your gem's website or public repo URL here."
-  spec.license       = ""
+  spec.summary       = "fluent-plugin-mattemost"
+  spec.description   = "This plugin allows you to send messages to mattermost in case of errors"
+  spec.homepage      = "https://www.levigo.de"
+  spec.license       = "Apache-2.0"
 
   test_files, files  = `git ls-files -z`.split("\x0").partition do |f|
     f.match(%r{^(test|spec|features)/})
