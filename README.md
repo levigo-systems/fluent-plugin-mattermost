@@ -14,8 +14,8 @@ $ gem install fluent-logger
 
 # Installation
 
-[Installation](installation.md)  
-[Docker-installation](docker-installation.md)
+[Installation](documentation/installation.md)  
+[Docker-installation](documentation/docker-installation.md)
 
 # Usage (Incoming Webhook)
 Link for
