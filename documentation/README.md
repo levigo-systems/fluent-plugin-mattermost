@@ -14,22 +14,8 @@ $ gem install fluent-logger
 
 # Installation
 
-To install the plugin you need to download the package directly from Gitlab and run the installation.  
-Link to repository:
-
-[fluent-plugin-mattermost](https://gitlab.levigo.systems/codefactory/fluent-plugin-mattermost)
-
-```
-$ gem install bundler
-```
-```
-$ rake build
-```
-```
-$ gem install --local ./pkg/fluent-plugin-mattermost-0.1.0.gem
-```
-
-The installation is completed
+[Installation](installation.md)  
+[Docker-installation](docker-installation.md)
 
 # Usage (Incoming Webhook)
 Link for
@@ -58,28 +44,6 @@ Link for
 |message|The message you want to send, can be a static message, which you add at this point, or you can receive the fluent infos with the %s|string|nil
 |enable_tls|you can set the communication channel if it uses tls|bool|true|
 
-# Docker installation
-
-### Dockerfile
-
-You need to enter the repository where you can download and later install the plugin. Here is a snippet code  
-**Attention:** If you use gitlab, don't forget to enter the token for oauth2
-
-```docker
-...
-
-RUN cd /fluentd/plugins && \
-    export GIT_SSL_NO_VERIFY=1 &&\
-    git clone https://oauth2:<TOKEN>@gitlab.levigo.systems/codefactory/fluent-plugin-mattermost.git && \
-    cd fluent-plugin-mattermost && \
-    git checkout feature/send-message-to-mattermost && \
-    gem install bundler && \
-    rake build && \
-    gem install --local ./pkg/fluent-plugin-mattermost-0.1.0.gem && \
-    cd .. && rm fluent-plugin-mattermost -rf
-
-...
-```
 ## Copyright
 
 * Copyright(c) 2021- [levigo gruppe](https://www.levigo.de/)
