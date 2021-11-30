@@ -1,9 +1,6 @@
 # Installation
 
-To install the plugin you need to download the package directly from Gitlab and run the installation.  
-Link to repository:
-
-[fluent-plugin-mattermost](https://gitlab.levigo.systems/codefactory/fluent-plugin-mattermost)
+To install the plugin you need to download the package directly from Gitlab and run the installation.
 
 ```
 $ gem install bundler

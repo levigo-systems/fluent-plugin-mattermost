@@ -6,7 +6,7 @@ With this plugin you can send messages directly to a channel in Mattermost (for 
 
 # Installation requirement
 
-For the plugin to work properly, you need to have the following gems installed
+For the plugin to work properly, you need to have the following gem installed
 - fluent-logger
 ```
 $ gem install fluent-logger
