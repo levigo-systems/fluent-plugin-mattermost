@@ -3,14 +3,17 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
   spec.name    = "fluent-plugin-mattermost"
-  spec.version = "0.1.0"
+  spec.version = "0.1.1"
   spec.authors = ["Pierluigi Minardi"]
   spec.email   = ["p.minardi@levigo.de"]
 
   spec.summary       = "fluent-plugin-mattemost"
   spec.description   = "This plugin allows you to send messages to mattermost in case of errors"
-  spec.homepage      = "https://www.levigo.de"
+  spec.homepage      = "https://github.com/levigo-systems/fluent-plugin-mattermost"
   spec.license       = "Apache-2.0"
+  spec.metadata = {
+    "homepage_uri" => "https://www.levigo.de"
+  }
 
   test_files, files  = `git ls-files -z`.split("\x0").partition do |f|
     f.match(%r{^(test|spec|features)/})
