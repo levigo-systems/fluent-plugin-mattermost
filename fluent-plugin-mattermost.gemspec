@@ -11,9 +11,6 @@ Gem::Specification.new do |spec|
   spec.description   = "This plugin allows you to send messages to mattermost in case of errors"
   spec.homepage      = "https://github.com/levigo-systems/fluent-plugin-mattermost"
   spec.license       = "Apache-2.0"
-  spec.metadata = {
-    "homepage_uri" => "https://www.levigo.de"
-  }
 
   test_files, files  = `git ls-files -z`.split("\x0").partition do |f|
     f.match(%r{^(test|spec|features)/})
