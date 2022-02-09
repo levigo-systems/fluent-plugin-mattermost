@@ -1,9 +1,11 @@
 lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
+require_relative "lib/release/version"
+
 Gem::Specification.new do |spec|
   spec.name    = "fluent-plugin-mattermost"
-  spec.version = "0.1.2"
+  spec.version = Release::VERSION
   spec.authors = ["Pierluigi Minardi"]
   spec.email   = ["p.minardi@levigo.de"]
 

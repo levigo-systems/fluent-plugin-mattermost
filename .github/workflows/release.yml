@@ -1,0 +1,80 @@
+name: fluent-plugin-test-release
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      # Set a mask
+      - name: create a mask
+        run: |
+          echo "::add-mask::${{ secrets.GITHUB_TOKEN }}"
+      - uses: GoogleCloudPlatform/release-please-action@v3.0.1
+        id: release
+        with:
+          # Personal Access Token
+          token: ${{ secrets.GITHUB_TOKEN }}
+          # The release type
+          release-type: ruby
+          # A name for the artifact releases are being created for
+          # which is the name of our gem
+          package-name: fluent-plugin-test-release
+          bump-minor-pre-major: true
+          bump-patch-for-minor-pre-major: true
+          # Path to our version file to increment
+          version-file: "lib/release/version.rb"
+          # INFOS: In case you get the error message: Error: release-please failed: Validation Failed: {"resource":"Release","code":"already_exists","field":"tag_name"}
+          # You can comment out the pull-request-title-pattern to see in the action log which version it is locked in.
+          # Found the version of the tag where release-please-acton wants to create the PR, remove it from the repository and try again
+          pull-request-title-pattern: "fluent-plugin-test-release ${scope}: release${component} ${version}"
+      - uses: actions/checkout@v2
+        if: ${{ steps.release.outputs.release_created }}
+       # Setup ruby if a release was created
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.0.2
+        if: ${{ steps.release.outputs.release_created }}
+      - name: Install the bundle with the version 2.2.32
+        if: ${{ steps.release.outputs.release_created }}
+        run: gem install bundler:2.2.32
+      # Update the version.rb file with the new version
+      - name: update version.rb file
+        if: ${{ steps.release.outputs.release_created }}
+        run: printf "module Release\n VERSION = '${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}.${{ steps.release.outputs.patch }}'\nend" > lib/release/version.rb
+      # Bundle install
+      - run: bundle _2.2.32_ install
+        if: ${{ steps.release.outputs.release_created }}
+      # Set a mask
+      - name: create a mask
+        if: ${{ steps.release.outputs.release_created }}
+        run: |
+          echo "::add-mask::${{ secrets.GEM_HOST_API_KEY }}"
+          echo "::add-mask::${{ secrets.GITHUB_TOKEN }}"
+      # Publish on the rubygem.org
+      - name: publish gem
+        if: ${{ steps.release.outputs.release_created }}
+        env:
+          GEM_HOST_API_KEY: ${{ secrets.GEM_HOST_API_KEY }}
+        run: |
+          mkdir -p $HOME/.gem
+          touch $HOME/.gem/credentials
+          chmod 0600 $HOME/.gem/credentials
+          printf -- "---\n:rubygems_api_key: ${GEM_HOST_API_KEY}\n" > $HOME/.gem/credentials
+          gem build fluent-plugin-test-release
+          gem push fluent-plugin-test-release-${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}.${{ steps.release.outputs.patch }}.gem
+          echo "A new gem was pushed!!!"
+      - uses: meeDamian/github-release@2.0
+        if: ${{ steps.release.outputs.release_created }}
+        with:
+          tag: v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}.${{ steps.release.outputs.patch }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          name: fluent-plugin-test-release-v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}.${{ steps.release.outputs.patch }}
+          allow_override: true
+          gzip: true
+          files: >
+            fluent-plugin-test-release-${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}.${{ steps.release.outputs.patch }}.gem
