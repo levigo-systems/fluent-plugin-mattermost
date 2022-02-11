@@ -1,4 +1,4 @@
-name: fluent-plugin-test-release
+name: fluent-plugin-mattermost
 on:
   push:
     branches:
@@ -23,7 +23,7 @@ jobs:
           release-type: ruby
           # A name for the artifact releases are being created for
           # which is the name of our gem
-          package-name: fluent-plugin-test-release
+          package-name: fluent-plugin-mattermost
           bump-minor-pre-major: true
           bump-patch-for-minor-pre-major: true
           # Path to our version file to increment
@@ -31,7 +31,7 @@ jobs:
           # INFOS: In case you get the error message: Error: release-please failed: Validation Failed: {"resource":"Release","code":"already_exists","field":"tag_name"}
           # You can comment out the pull-request-title-pattern to see in the action log which version it is locked in.
           # Found the version of the tag where release-please-acton wants to create the PR, remove it from the repository and try again
-          pull-request-title-pattern: "fluent-plugin-test-release ${scope}: release${component} ${version}"
+          pull-request-title-pattern: "fluent-plugin-mattermost ${scope}: release${component} ${version}"
       - uses: actions/checkout@v2
         if: ${{ steps.release.outputs.release_created }}
        # Setup ruby if a release was created
@@ -65,16 +65,16 @@ jobs:
           touch $HOME/.gem/credentials
           chmod 0600 $HOME/.gem/credentials
           printf -- "---\n:rubygems_api_key: ${GEM_HOST_API_KEY}\n" > $HOME/.gem/credentials
-          gem build fluent-plugin-test-release
-          gem push fluent-plugin-test-release-${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}.${{ steps.release.outputs.patch }}.gem
+          gem build fluent-plugin-mattermost
+          gem push fluent-plugin-mattermost-${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}.${{ steps.release.outputs.patch }}.gem
           echo "A new gem was pushed!!!"
       - uses: meeDamian/github-release@2.0
         if: ${{ steps.release.outputs.release_created }}
         with:
           tag: v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}.${{ steps.release.outputs.patch }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          name: fluent-plugin-test-release-v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}.${{ steps.release.outputs.patch }}
+          name: fluent-plugin-mattermost-v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}.${{ steps.release.outputs.patch }}
           allow_override: true
           gzip: true
           files: >
-            fluent-plugin-test-release-${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}.${{ steps.release.outputs.patch }}.gem
+            fluent-plugin-mattermost-${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}.${{ steps.release.outputs.patch }}.gem
