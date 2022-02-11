@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.2.1](https://github.com/levigo-systems/fluent-plugin-mattermost/compare/v0.2.0...v0.2.1) (2022-02-11)
+
+
+### Bug Fixes
+
+* replaced the name in fluent-plugin-mattermost ([18a9cea](https://github.com/levigo-systems/fluent-plugin-mattermost/commit/18a9cea4b9038ee374c61c0ff062dc91b9547c3d))
+
 ## 0.2.0 (2022-02-11)
 
 
