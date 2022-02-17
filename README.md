@@ -30,6 +30,7 @@ Link for
     message_title mattermost
     message %s
     enable_tls true
+    ca_path /etc/ssl/certs/
 </match>
 ```
 
@@ -43,6 +44,7 @@ Link for
 |message_title|title you want to add to the message|string|fluent_title_default
 |message|The message you want to send, can be a static message, which you add at this point, or you can receive the fluent infos with the %s|string|nil
 |enable_tls|you can set the communication channel if it uses tls|bool|true|
+|ca_path|you can set the path of the certificates|string|nil|
 
 ## Copyright
 
