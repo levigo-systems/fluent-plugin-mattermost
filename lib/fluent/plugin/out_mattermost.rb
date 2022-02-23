@@ -24,6 +24,8 @@ module Fluent
 
       config_param :enable_tls,  :bool, default: true
 
+      config_param :ca_path,  :string, default: nil
+
       def configure(conf)
         super
       end
@@ -53,6 +55,9 @@ module Fluent
 
         https = Net::HTTP.new(url.host, url.port)
         https.use_ssl = @enable_tls
+        if !@ca_path.nil? and @enable_tls == true
+            https.ca_path = @ca_path
+        end
 
         request = Net::HTTP::Post.new(url)
         request["Content-Type"] = "application/json"
