@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.2.2](https://github.com/levigo-systems/fluent-plugin-mattermost/compare/v0.2.1...v0.2.2) (2022-02-23)
+
+
+### Features
+
+* added a new option to set ca_path manually ([aabd610](https://github.com/levigo-systems/fluent-plugin-mattermost/commit/aabd6101c811ac6a6d78f2c2105e83b10833779f))
+
 ### [0.2.1](https://github.com/levigo-systems/fluent-plugin-mattermost/compare/v0.2.0...v0.2.1) (2022-02-11)
 
 
